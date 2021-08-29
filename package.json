@@ -1,0 +1,39 @@
+{
+  "name": "quotes",
+  "version": "1.0.0",
+  "description": "quotes",
+  "author": "Kostya",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon api/index.js --watch api", 
+    "build": "nuxt build",
+    "start": "cross-env NODE_ENV=production node api/index.js",
+    "generate": "nuxt generate",
+    "test": "npm run build && npm run start"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.3.6",
+    "bcrypt-nodejs": "0.0.3",
+    "cookie": "^0.4.1",
+    "cookieparser": "^0.1.0",
+    "cross-env": "^5.2.0",
+    "dateformat": "^3.0.3",
+    "element-ui": "^2.13.2",
+    "express": "^4.16.4",
+    "js-cookie": "^2.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
+    "mysql2": "^2.1.0",
+    "node-file-logger": "^0.9.5",
+    "npm": "^6.14.5",
+    "nuxt": "^2.0.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "node-sass": "^4.14.1",
+    "nodemon": "^1.18.9",
+    "sass-loader": "^9.0.2"
+  }
+}
