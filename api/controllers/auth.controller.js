@@ -8,45 +8,42 @@ const log = require('node-file-logger');
 log.SetUserOptions(keys.LOG_OPTIONS);
 
 module.exports.login = async (req, res) => {
-    
-  if( req.body.email && req.body.password ){ 
-    
-    try{
+  try {
+    if (req.body.email && req.body.password) { 
 
       const [rows] = await db.execute('SELECT * FROM `users` WHERE `email` = ?', [req.body.email])
-        
-        if(rows.length > 0 ){
-          
-          const candidate = rows[0]  
 
-          const isPassCorrect = bcrypt.compareSync(req.body.password, candidate.password)  
-      
-          if(isPassCorrect){ 
+      if (rows.length > 0) {
 
-            let tonek_data = {
-              userId: candidate.id
-            } 
-            
-            const token = jwt.sign(tonek_data, keys.JWT, { expiresIn: keys.JWT_EX })
-        
-            res.json({ token })
+        const candidate = rows[0]
 
-          } else {
-            log.Error('Пользователя не найден', 'auth', 'login');
-            res.status(409).json({message: "Пользователя не найден"})
-          } 
+        const isPassCorrect = bcrypt.compareSync(req.body.password, candidate.password)
+
+        if (isPassCorrect) {
+
+          let tonek_data = {
+            userId: candidate.id
+          }
+
+          const token = jwt.sign(tonek_data, keys.JWT, { expiresIn: keys.JWT_EX })
+
+          res.json({ token })
 
         } else {
-          res.status(409).json({message : 'Такого пользователя не существует'}) 
+          log.Error('Пользователя не найден', 'auth', 'login');
+          res.status(409).json({ message: "Пользователя не найден" })
         }
-   
-    } catch (err){
-      log.Fatal('Авторизация пользователя', 'auth', 'login', err);
-      res.status(409).json({message : 'Ошибка при авторизации пользователя'})
-    }  
 
-  }else{ 
-    res.status(409).json({message : "Не передано Email или Password"}) 
-  } 
+      } else {
+        res.status(409).json({ message: 'Такого пользователя не существует' })
+      } 
 
-} 
+    } else {
+      res.status(409).json({ message: "Не передано Email или Password" })
+    }
+  } catch (err) { 
+    log.Fatal('Авторизация пользователя', 'auth', 'login', err.toString());
+    res.status(409).json({ message: 'Ошибка при авторизации пользователя' })
+  }
+
+}
