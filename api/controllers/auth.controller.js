@@ -9,7 +9,7 @@ log.SetUserOptions(keys.LOG_OPTIONS);
 
 module.exports.login = async (req, res) => {
   try {
-    if (req.body.email && req.body.password) { 
+    if (req.body.email && req.body.password) {
 
       const [rows] = await db.execute('SELECT * FROM `users` WHERE `email` = ?', [req.body.email])
 
@@ -36,14 +36,43 @@ module.exports.login = async (req, res) => {
 
       } else {
         res.status(409).json({ message: 'Такого пользователя не существует' })
-      } 
+      }
 
     } else {
       res.status(409).json({ message: "Не передано Email или Password" })
     }
-  } catch (err) { 
+  } catch (err) {
     log.Fatal('Авторизация пользователя', 'auth', 'login', err.toString());
     res.status(409).json({ message: 'Ошибка при авторизации пользователя' })
   }
 
+}
+
+module.exports.singUp = async (req, res) => {
+  try {
+    if (req.body.email && req.body.password) { 
+
+      const [rows] = await db.execute('SELECT * FROM `users` WHERE `email` = ?', [req.body.email])
+
+      if (rows.length > 0) {
+        res.status(409).json({ message: "Такой пользователь уже существует" })
+      } else {
+
+        const salt = bcrypt.genSaltSync(10) 
+
+        await db.query('INSERT INTO `users` SET ?', {
+          email: req.body.email, 
+          password: bcrypt.hashSync(req.body.password, salt)
+        })
+
+        res.json({ message: `Пользователь email : ${req.body.email} успешно добавлен` }) 
+      }
+ 
+    } else {
+      res.status(409).json({ message: "Не передано email, password" })
+    }
+  } catch (err) {
+    log.Fatal('Создание пользователя', 'auth', 'singUp', err.toString());
+    res.status(409).json({ message: 'Ошибка при создании пользователя' })
+  }
 }
