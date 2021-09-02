@@ -17,10 +17,10 @@ const comparisonTime = (current, open, close) =>{
 }
 
 const writeQuotesToDB = async (name, price, time) => { 
-  await db.query("CREATE TABLE IF NOT EXISTS `"+ name + "`  ( `id` INT NOT NULL AUTO_INCREMENT , `price` INT NOT NULL , `date` VARCHAR(255) NOT NULL , `time` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;") 
-     
+  await db.query("CREATE TABLE IF NOT EXISTS `"+ name + "`  ( `id` INT NOT NULL AUTO_INCREMENT , `price` DOUBLE NOT NULL , `date` VARCHAR(255) NOT NULL , `time` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;") 
+   
   await db.query('INSERT INTO `'+ name + '` SET ?', { 
-    price : price,
+    price : price.replace(",", ""),
     date : Math.floor(Date.now() / 1000),
     time : time
   })

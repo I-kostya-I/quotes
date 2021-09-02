@@ -5,14 +5,15 @@
   "author": "Kostya",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon api/index.js --watch api", 
+    "dev": "cross-env NODE_ENV=development nodemon api/index.js --watch api",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production node api/index.js",
+    "parser": "cross-env NODE_ENV=production node parser/index.js",
     "generate": "nuxt generate",
     "test": "npm run build && npm run start"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.3.6",
+    "@nuxtjs/axios": "^5.3.6", 
     "bcrypt-nodejs": "0.0.3",
     "cookie": "^0.4.1",
     "cookieparser": "^0.1.0",
@@ -29,7 +30,9 @@
     "nuxt": "^2.0.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "puppeteer": "^10.2.0",
+    "user-agents": "^1.0.762"
   },
   "devDependencies": {
     "node-sass": "^4.14.1",
