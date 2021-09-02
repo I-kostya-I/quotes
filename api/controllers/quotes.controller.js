@@ -5,7 +5,7 @@ const log = require('node-file-logger');
 log.SetUserOptions(keys.LOG_OPTIONS);
 
 module.exports.getQuotes = async (req, res) => {
-  res.json("GET")
+  res.json("GET 2")
 }
 
 const parseTime = (stringTime) =>{
