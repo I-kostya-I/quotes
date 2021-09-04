@@ -69,10 +69,10 @@ export default {
         meta: { icon: "setting", prefix: "fas" },
       },
       {
-        path: "/admin/test",
-        name: "Тест",
+        path: "/admin/charts",
+        name: "Графики",
         hidden: false,
-        meta: { icon: "setting", prefix: "fas" },
+        meta: { icon: "data-line", prefix: "fas" },
       },
       {
         path: "/admin/logout",
