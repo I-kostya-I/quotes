@@ -151,6 +151,8 @@
             ]"
           >
             <el-input
+              type="textarea"
+              :rows="5"
               placeholder="Ссылка на таблицу"
               v-model="addLinkData.link"
             ></el-input>
@@ -195,7 +197,7 @@
               },
             ]"
           >
-            <el-input
+            <el-input 
               placeholder="Алиас"
               v-model="addQuoteData.alias"
             ></el-input>
@@ -300,7 +302,7 @@ export default {
       },
       addLinkBtnText: "Добавить ссылку",
       addQuoteBtnText: "Добавить инструмент",
-      activeTab: "quotes",
+      activeTab: "links",
     };
   },
   methods: {
