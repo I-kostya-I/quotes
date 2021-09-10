@@ -67,7 +67,7 @@ export default {
     return {
       loginForm: {
         email: 'admin@admin.com', 
-        password: '123'
+        password: '123456'
       }, 
       loginRules: {
         email: [

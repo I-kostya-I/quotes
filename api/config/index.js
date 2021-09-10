@@ -2,12 +2,19 @@ module.exports = {
     BASE_URL : 'http://localhost:3000', 
     JWT : 'key_jwt',
     JWT_EX : 24*60*60*7300, 
-    PARSER : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE1LCJpYXQiOjE2MzA1ODY5NDYsImV4cCI6MjI2MTMwNjk0Nn0.KRysF_WgF-8xRKPJk7s9sQ6m7xJZ2c-bEgtNxGZ9aGE",
+    PARSER : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTYzMTI2NzA3MiwiZXhwIjoyMjYxOTg3MDcyfQ.rxmC-yh4QBcXxZ0Lhl64MKiyneUUDSV3_xmKHdhB1RI",
+    // DATA_BASE : {
+    //     host : "remotemysql.com",
+    //     user : "w5X7xM9vxJ",
+    //     database: 'w5X7xM9vxJ',
+    //     password : 'HROLOxkqeD',
+    //     port : 3306
+    // }, 
     DATA_BASE : {
-        host : "remotemysql.com",
-        user : "w5X7xM9vxJ",
-        database: 'w5X7xM9vxJ',
-        password : 'HROLOxkqeD',
+        host : "sql11.freesqldatabase.com",
+        user : "sql11435912",
+        database: 'sql11435912',
+        password : 'w6gQCsivcu',
         port : 3306
     }, 
     LOG_OPTIONS : {
