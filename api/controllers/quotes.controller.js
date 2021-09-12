@@ -4,8 +4,65 @@ const db = require('../config/dataBaseConnection')
 const log = require('node-file-logger');
 log.SetUserOptions(keys.LOG_OPTIONS);
 
+const loadChartData = async (body, res) =>{
+  if(body.alias && body.period) {
+    let quotes
+
+    if(body.date && body.date.start){ 
+      if((new Date(body.date.start)).getTime() > 0){
+        quotes = await db.query('SELECT price, date FROM `'+ body.alias +'` WHERE date >= ? AND time % ? = 0', [body.date.start, body.period])
+      } else {
+        res.status(409).json({ message: "Невалидный date -> start" })
+      }  
+    } else {
+      let now = new Date();
+      // let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      let startOfDay = new Date(now.getFullYear(), now.getMonth(), 10);
+      let timestamp = startOfDay / 1000; 
+
+      quotes = await db.query('SELECT price, date FROM `'+ body.alias +'` WHERE date >= ? AND `time` % ? = 0', [timestamp, body.period])
+    } 
+
+    res.json({
+      message : "successful",
+      data : quotes[0]
+    })
+  } else {
+    res.status(409).json({ message: "Не передано alias, period" })
+  }
+}
+
+const loadPointData = async (body, res) => {
+  if(body.alias) {  
+    let quote = await db.query('SELECT price, date FROM `'+ body.alias +'` ORDER BY id DESC LIMIT 1')
+ 
+    res.json({
+      message : "successful",
+      point : quote[0]
+    })
+  } else {
+    res.status(409).json({ message: "Не передано alias" })
+  }
+}
+
 module.exports.getQuotes = async (req, res) => {
-  res.json("GET")
+  try {
+
+    switch (req.body.type) {
+      case 'chart':
+        await loadChartData(req.body, res) 
+        break;
+      case 'loadPoint':
+        await loadPointData(req.body, res) 
+        break; 
+      default:
+        res.status(404).json({ message: `Тип ${req.body.type} не найден` })
+    } 
+
+  } catch (err) {
+    log.Fatal('Выгрузка значений(quotes)', 'quotes', 'getQuotes', err.toString());
+    res.status(409).json({ message: 'Ошибка при выгрузке значений(quotes)' })
+  }
 }
 
 const parseTime = (stringTime) =>{

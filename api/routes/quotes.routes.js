@@ -5,7 +5,7 @@ const ctr = require('./../controllers/quotes.controller')
 const router = Router()
  
 // router.post('/setPassword', passport.authenticate('jwt', { session : false }), validate.access(["ADMIN", "ROOT", "USER"], false),  ctr.setPassword)
-router.get('/', passport.authenticate('jwt', { session : false }),  ctr.getQuotes)
+router.post('/load', ctr.getQuotes)
 
 router.post('/', passport.authenticate('jwt', { session : false }),  ctr.addQuotes)
 

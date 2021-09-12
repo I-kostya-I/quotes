@@ -3,13 +3,6 @@ module.exports = {
     JWT : 'key_jwt',
     JWT_EX : 24*60*60*7300, 
     PARSER : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTYzMTI2NzA3MiwiZXhwIjoyMjYxOTg3MDcyfQ.rxmC-yh4QBcXxZ0Lhl64MKiyneUUDSV3_xmKHdhB1RI",
-    // DATA_BASE : {
-    //     host : "remotemysql.com",
-    //     user : "w5X7xM9vxJ",
-    //     database: 'w5X7xM9vxJ',
-    //     password : 'HROLOxkqeD',
-    //     port : 3306
-    // }, 
     DATA_BASE : {
         host : "sql11.freesqldatabase.com",
         user : "sql11435912",

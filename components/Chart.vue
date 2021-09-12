@@ -1,29 +1,18 @@
 <template>
   <div>
     <client-only placeholder="Сборка компонентов...">
-      <highcharts :constructor-type="'chart'" :options="options" ></highcharts>
+      <highcharts :constructor-type="'chart'" :updateArgs="[true, true, true]" :options="options" ></highcharts>
     </client-only>
   </div>
 </template>
 
-<script>
-// [1630588653000, 20.3],
-//   [1630588743000, 20.6],
-//   [1630589209000, 20.74],
-//   [1630589264000, 11],
-//   [1630589323000, 23.4],
-//   [1630589383000, 20.3],
-//   [1630589444000, 23.5],
-const data = [
-  [1630598753000, 0]
-];
+<script> 
+
 export default {
   data() {
-    return {
-      params: {
-         
-      },
-      options: {
+    return { 
+      dataLoad :  [],
+      options: { 
         chart: {
           type: "area",
           shadow: true,
@@ -32,13 +21,15 @@ export default {
           // height : 250
           events: {
             load: function () {
-
-              var series = this.series[0];
-              var plotValue = this.yAxis[0].options.plotLines[0]
+              
+              var series = this.series[0]
+              var plotValue = this.yAxis[0].options.plotLines[0]   
+               
               setInterval(function () {
-                var x = new Date().getTime(), y = Math.floor(Math.random() * 5); 
+                var x = new Date().getTime(), y = Math.floor(Math.random() * 3000); 
                 
                 plotValue.value = y;
+                
                 series.addPoint([x, y], true, series.data.length > 4);
               }, 2000) 
             },
@@ -71,7 +62,7 @@ export default {
             {
               color: "black",
               width: 0.5,
-              value: data[data.length - 1][1],
+              value: null,
               zIndex: 5,
               label: {
                 style: {
@@ -133,14 +124,26 @@ export default {
           },
         },
 
-        series: [
-          {
-            data: data,
-          },
-        ],
+        series: [{
+          data : []
+        }],
       },
     };
   },
+  methods: {
+    updateSeries() {
+      this.options.series[0].data = this.dataLoad;
+      this.options.yAxis.plotLines[0].value = this.dataLoad[this.dataLoad.length - 1][1] 
+    }
+  }, 
+  async mounted(){ 
+    
+    let quotes = await this.$store.dispatch('graphics/getQuotesData', this.$route.query)
+    this.dataLoad = quotes.data.map(el => [ el.date *1000, el.price + Math.floor(Math.random() * 20)]) 
+    this.updateSeries()
+    // this.options.series[0].data = quotes
+    // this.options.yAxis.plotLines[0].value = quotes[quotes.length - 1][1] 
+  }
 };
 </script>
 
