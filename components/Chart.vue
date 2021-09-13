@@ -1,7 +1,7 @@
 <template>
   <div>
     <client-only placeholder="Сборка компонентов...">
-      <highcharts :constructor-type="'chart'" :updateArgs="[true, true, true]" :options="options" ></highcharts>
+      <highcharts :constructor-type="'chart'" :updateArgs="updateArgs" ref="chart" :options="options" ></highcharts>
     </client-only>
   </div>
 </template>
@@ -11,29 +11,20 @@
 export default {
   data() {
     return { 
-      dataLoad :  [],
-      options: { 
+      dataLoad :  [
+        []
+      ], 
+      updateArgs: [true, true]
+    };
+  },
+
+  computed : {
+    options() {
+      return { 
         chart: {
           type: "area",
           shadow: true,
-          zoomType: "x",
-          // width : 300,
-          // height : 250
-          events: {
-            load: function () {
-              
-              var series = this.series[0]
-              var plotValue = this.yAxis[0].options.plotLines[0]   
-               
-              setInterval(function () {
-                var x = new Date().getTime(), y = Math.floor(Math.random() * 3000); 
-                
-                plotValue.value = y;
-                
-                series.addPoint([x, y], true, series.data.length > 4);
-              }, 2000) 
-            },
-          },
+          zoomType: "x"
         },
         credits: {
           enabled: false,
@@ -62,7 +53,7 @@ export default {
             {
               color: "black",
               width: 0.5,
-              value: null,
+              value: this.dataLoad[this.dataLoad.length - 1][1],
               zIndex: 5,
               label: {
                 style: {
@@ -125,24 +116,38 @@ export default {
         },
 
         series: [{
-          data : []
+          data : this.dataLoad
         }],
-      },
-    };
+      }
+    } 
   },
-  methods: {
-    updateSeries() {
-      this.options.series[0].data = this.dataLoad;
-      this.options.yAxis.plotLines[0].value = this.dataLoad[this.dataLoad.length - 1][1] 
-    }
+  
+  methods: { 
+
+    addPoint() {
+      var x = new Date().getTime(), y = Math.floor(Math.random() * 3000); 
+
+      this.$refs.chart.chart.yAxis[0].plotLinesAndBands[0].options.value = y
+
+      this.$refs.chart.chart.series[0].addPoint(
+        [x, y], 
+        true, 
+        this.$refs.chart.chart.series[0].data.length > 50
+      );
+
+      
+    } 
+    
   }, 
   async mounted(){ 
     
     let quotes = await this.$store.dispatch('graphics/getQuotesData', this.$route.query)
-    this.dataLoad = quotes.data.map(el => [ el.date *1000, el.price + Math.floor(Math.random() * 20)]) 
-    this.updateSeries()
-    // this.options.series[0].data = quotes
-    // this.options.yAxis.plotLines[0].value = quotes[quotes.length - 1][1] 
+    this.dataLoad = quotes.data.map(el => [ (el.date *1000) + 170000, el.price + Math.floor(Math.random() * 20)])  
+
+    var ctx = this
+    setInterval(function () { 
+      ctx.addPoint()
+    }, 2000) 
   }
 };
 </script>

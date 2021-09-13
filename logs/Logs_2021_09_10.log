@@ -1,4 +1,0 @@
-12:45:56 PM | Fatal | 'Ошибка открытия страниц' | Service: parser | Method: openPage | 
-'TimeoutError: Navigation timeout of 30000 ms exceeded'
-1:02:31 PM | Fatal | 'Ошибка открытия страниц' | Service: parser | Method: openPage | 
-'Error: Protocol error (Target.createTarget): Failed to open a new tab'
