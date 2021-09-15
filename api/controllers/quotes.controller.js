@@ -38,7 +38,7 @@ const loadPointData = async (body, res) => {
  
     res.json({
       message : "successful",
-      point : quote[0]
+      point : quote[0][0]
     })
   } else {
     res.status(409).json({ message: "Не передано alias" })

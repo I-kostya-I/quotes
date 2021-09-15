@@ -124,8 +124,8 @@ export default {
   
   methods: { 
 
-    addPoint() {
-      var x = new Date().getTime(), y = Math.floor(Math.random() * 3000); 
+    addPoint(x, y) {
+      // var x = new Date().getTime(), y = Math.floor(Math.random() * 3000); 
 
       this.$refs.chart.chart.yAxis[0].plotLinesAndBands[0].options.value = y
 
@@ -142,11 +142,14 @@ export default {
   async mounted(){ 
     
     let quotes = await this.$store.dispatch('graphics/getQuotesData', this.$route.query)
-    this.dataLoad = quotes.data.map(el => [ (el.date *1000) + 170000, el.price + Math.floor(Math.random() * 20)])  
+    this.dataLoad = quotes.data.map(el => [ (el.date *1000) , el.price + Math.floor(Math.random() * 20)])  
 
+    
     var ctx = this
-    setInterval(function () { 
-      ctx.addPoint()
+    setInterval(async function () {  
+      let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : ctx.$route.query.alias } ) 
+       
+      ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + Math.floor(Math.random() * 20) )
     }, 2000) 
   }
 };
