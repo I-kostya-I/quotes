@@ -4,7 +4,7 @@ module.exports = {
     JWT_EX : 24*60*60*7300, 
     PARSER : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTYzMTI2NzA3MiwiZXhwIjoyMjYxOTg3MDcyfQ.rxmC-yh4QBcXxZ0Lhl64MKiyneUUDSV3_xmKHdhB1RI",
     DATA_BASE : {
-        host : "sql11.freesqldatabase.com",
+        host : "db4free.net",
         user : "sql11435912",
         database: 'sql11435912',
         password : 'w6gQCsivcu',

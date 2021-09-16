@@ -32,7 +32,7 @@ export default {
           href: "https://www.google.com",
         },
         title: {
-          text: "Тестовый график",
+          text: "",
           floating: true,
           align: "center",
           y: 25,
@@ -124,8 +124,7 @@ export default {
   
   methods: { 
 
-    addPoint(x, y) {
-      // var x = new Date().getTime(), y = Math.floor(Math.random() * 3000); 
+    addPoint(x, y) { 
 
       this.$refs.chart.chart.yAxis[0].plotLinesAndBands[0].options.value = y
 
@@ -142,15 +141,16 @@ export default {
   async mounted(){ 
     
     let quotes = await this.$store.dispatch('graphics/getQuotesData', this.$route.query)
+     
     this.dataLoad = quotes.data.map(el => [ (el.date *1000) , el.price + Math.floor(Math.random() * 20)])  
-
+    this.options.title.text = quotes.q_config.name
     
     var ctx = this
     setInterval(async function () {  
       let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : ctx.$route.query.alias } ) 
        
       ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + Math.floor(Math.random() * 20) )
-    }, 2000) 
+    }, 60000) 
   }
 };
 </script>

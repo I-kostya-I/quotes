@@ -8,6 +8,8 @@ const loadChartData = async (body, res) =>{
   if(body.alias && body.period) {
     let quotes
 
+    let quote_config = await db.query('SELECT * FROM `quotes_config` WHERE alias = ? ', [body.alias])
+
     if(body.date && body.date.start){ 
       if((new Date(body.date.start)).getTime() > 0){
         quotes = await db.query('SELECT price, date FROM `'+ body.alias +'` WHERE date >= ? AND time % ? = 0', [body.date.start, body.period])
@@ -25,7 +27,8 @@ const loadChartData = async (body, res) =>{
 
     res.json({
       message : "successful",
-      data : quotes[0]
+      data : quotes[0],
+      q_config  : quote_config[0][0]
     })
   } else {
     res.status(409).json({ message: "Не передано alias, period" })
