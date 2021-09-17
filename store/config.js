@@ -1,4 +1,5 @@
 export const state = () => ({ 
+  baseUrl : 'http://localhost:3000'
 })
 
 
@@ -95,5 +96,5 @@ export const actions = {
 }
 
 export const getters = {
-   
+  baseUrl : state => state.baseUrl
 }

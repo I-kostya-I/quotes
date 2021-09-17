@@ -9,6 +9,7 @@
 <script> 
 
 export default {
+  props : ['settings'],
   data() {
     return { 
       dataLoad :  [
@@ -103,7 +104,7 @@ export default {
               ],
             },
             marker: {
-              radius: 2,
+              radius: 0.5,
             },
             lineWidth: 1.5,
             states: {
@@ -132,25 +133,34 @@ export default {
         [x, y], 
         true, 
         this.$refs.chart.chart.series[0].data.length > 50
-      );
-
+      ); 
       
+    },
+
+    getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min)) + min;  
     } 
     
   }, 
   async mounted(){ 
-    
-    let quotes = await this.$store.dispatch('graphics/getQuotesData', this.$route.query)
+    let queryData
+
+    this.settings ? queryData = this.settings : queryData = this.$route.query
      
-    this.dataLoad = quotes.data.map(el => [ (el.date *1000) , el.price + Math.floor(Math.random() * 20)])  
+    
+    let quotes = await this.$store.dispatch('graphics/getQuotesData', queryData)
+     
+    this.dataLoad = quotes.data.map(el => [ (el.date *1000) , el.price + this.getRandomInt(-queryData.random, queryData.random)])  
     this.options.title.text = quotes.q_config.name
     
     var ctx = this
     setInterval(async function () {  
-      let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : ctx.$route.query.alias } ) 
+      let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : queryData.alias } ) 
        
-      ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + Math.floor(Math.random() * 20) )
-    }, 60000) 
+      ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + ctx.getRandomInt(-queryData.random, queryData.random) )
+    }, 60000 * queryData.period) 
   }
 };
 </script>

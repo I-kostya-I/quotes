@@ -7,7 +7,7 @@
           <el-tab-pane label="Обычный график" name="chart">
             <el-row :gutter="20">
               <el-col :span="15">
-                <chart />
+                <chart v-if="settingsChart.alias" :settings="settingsChart" :key="chartUniqueKey"/>
 
                 <el-input 
                   class="result-chart-link"
@@ -19,12 +19,62 @@
               </el-col>
               <el-col :span="8" :offset="1">
                 <p class="settings-title"><span>Настройки</span></p>
-                
+                 
+                <el-form label-position="top" ref="chart" :model="settingsChart">
+
+                  <el-form-item label="Тип" >
+                    <el-input disabled v-model="settingsChart.type"></el-input>
+                  </el-form-item>
+ 
+                  <el-form-item 
+                    label="Алиас"
+                    prop="alias"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  >
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsChart.alias">
+                      <el-option
+                        v-for="element in this.quotesList"
+                        :key="element.alias"
+                        :label="element.name"
+                        :value="element.alias">
+                      </el-option>
+                    </el-select>
+                     
+                  </el-form-item>
+
+                  <el-form-item 
+                    label="Период"
+                    prop="period"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  > 
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsChart.period">
+                      <el-option
+                        v-for="element in 60"
+                        :key="element"
+                        :label="element"
+                        :value="element">
+                      </el-option>
+                    </el-select>
+                  </el-form-item> 
+
+                  <el-form-item label="+ Рандомное значение (диапазон)" >
+                    <el-input-number :step="0.1" :max="50" class="form-iteam-full-width" v-model="settingsChart.random"></el-input-number>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button class="update-and-gen-url-btn" type="primary" @click="updateGraphic('chart')">Обновить график и сгенерировать ссылку</el-button> 
+                  </el-form-item> 
+                  
+                </el-form>
               </el-col>
             </el-row> 
           </el-tab-pane>
 
-          <el-tab-pane label="График с выбором периода" name="chart-periods">
+          <!-- <el-tab-pane label="График с выбором периода" name="chart-periods">
             <el-row :gutter="20">
               <el-col :span="15">
                 <chart />
@@ -41,7 +91,7 @@
                 <p class="settings-title"><span>Настройки</span></p>
               </el-col>
             </el-row> 
-          </el-tab-pane>
+          </el-tab-pane> -->
 
         </el-tabs>
       </el-col>
@@ -57,18 +107,42 @@ export default {
   name: "Charts",
   middleware: ["adminAuth"],
   async asyncData({ store }) {
-    // await store.dispatch('organizations/get')
+    const quotesList = await store.dispatch("config/getQuotes")
+    return {quotesList}
   },
   data() {
     return {
-      result : 'http://localhost:3000/graphics/chart?...',
+      result : '',
       activeTab: "chart",
-      settings: {
-
+      chartUniqueKey : 'KTO5DZEMD2JY6',
+      settingsChart: { 
+        type : 'chart',
+        alias : null,
+        period : 1,
+        random : 0
       }
     };
+  }, 
+  methods: {
+    updateGraphic(refForm){
+      this.$refs[refForm].validate((valid) => {
+        console.log(valid)
+        if (valid) {
+          
+          this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+       
+          this.result = this.$store.getters['config/baseUrl'] + '/graphics/'
+
+          switch (refForm) {
+            case 'chart':
+              this.result += `chart?type=${this.settingsChart.type}&alias=${this.settingsChart.alias}&period=${this.settingsChart.period}&random=${this.settingsChart.random}`
+              break; 
+          }
+        }
+      }) 
+
+    }
   },
-  methods: {},
   components: {
     chart,
   },
@@ -76,6 +150,14 @@ export default {
 </script>
  
 <style>
+
+.update-and-gen-url-btn{
+  width: 70%;
+  margin-left: 15%;
+  margin-top: 25px;
+  font-size: 1.2em;
+}
+
 .settings-title{
   font-size: 1.4em;
   text-align: center;
