@@ -62,7 +62,7 @@
                   </el-form-item> 
 
                   <el-form-item label="+ Рандомное значение (диапазон)" >
-                    <el-input-number :step="0.1" :max="50" class="form-iteam-full-width" v-model="settingsChart.random"></el-input-number>
+                    <el-input-number :step="0.1" class="form-iteam-full-width" v-model="settingsChart.random"></el-input-number>
                   </el-form-item>
 
                   <el-form-item>
@@ -74,10 +74,10 @@
             </el-row> 
           </el-tab-pane>
 
-          <!-- <el-tab-pane label="График с выбором периода" name="chart-periods">
+          <el-tab-pane label="График 2" name="chart-periods">
             <el-row :gutter="20">
               <el-col :span="15">
-                <chart />
+                <!-- <chart /> -->
 
                 <el-input 
                   class="result-chart-link"
@@ -91,7 +91,7 @@
                 <p class="settings-title"><span>Настройки</span></p>
               </el-col>
             </el-row> 
-          </el-tab-pane> -->
+          </el-tab-pane>
 
         </el-tabs>
       </el-col>
@@ -152,10 +152,11 @@ export default {
 <style>
 
 .update-and-gen-url-btn{
-  width: 70%;
-  margin-left: 15%;
-  margin-top: 25px;
-  font-size: 1.2em;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 25px; 
+  white-space: initial;
+  font-size: 1.1em;
 }
 
 .settings-title{
