@@ -35,6 +35,42 @@ const loadChartData = async (body, res) =>{
   }
 }
 
+const loadChartListData = async (body, res) =>{
+  if(body.aliases && body.aliases.length > 0) {
+ 
+    let quoteList = []
+    let quote
+    let sqlConfigString = ''  
+
+    for (alias in body.aliases) { 
+      sqlConfigString +=  `'${body.aliases[alias]}',`
+    }
+
+    let quote_config = await db.query('SELECT * FROM `quotes_config`  WHERE `alias` IN (' + sqlConfigString.slice(0, -1)  + ')')  
+
+    for (alias in body.aliases) { 
+      quote = await db.query('SELECT price, date FROM `'+ body.aliases[alias] +'` ORDER BY id DESC LIMIT 1')
+
+      let configOneQuote = quote_config[0].find(element => element.alias === body.aliases[alias])
+ 
+      quoteList.push({
+        alias : body.aliases[alias],
+        price : quote[0][0].price,
+        name : configOneQuote.name,
+        open : configOneQuote.open,
+        close : configOneQuote.close
+      }); 
+    }  
+
+    res.json({
+      message : "successful",
+      data : quoteList
+    })
+  } else {
+    res.status(409).json({ message: "Не передано aliases" })
+  }
+}
+
 const loadPointData = async (body, res) => {
   if(body.alias) {  
     let quote = await db.query('SELECT price, date FROM `'+ body.alias +'` ORDER BY id DESC LIMIT 1')
@@ -54,6 +90,9 @@ module.exports.getQuotes = async (req, res) => {
     switch (req.body.type) {
       case 'chart':
         await loadChartData(req.body, res) 
+        break;
+      case 'chart-list':
+        await loadChartListData(req.body, res) 
         break;
       case 'loadPoint':
         await loadPointData(req.body, res) 

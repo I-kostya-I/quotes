@@ -15,6 +15,7 @@ export default {
       dataLoad :  [
         []
       ], 
+      timer : null,
       updateArgs: [true, true]
     };
   },
@@ -24,7 +25,7 @@ export default {
       return { 
         chart: {
           type: "area",
-          shadow: true,
+          shadow: false,
           zoomType: "x"
         },
         credits: {
@@ -144,6 +145,9 @@ export default {
     } 
     
   }, 
+  destroyed: function(){
+      clearInterval(this.timer);
+  }, 
   async mounted(){ 
     let queryData
 
@@ -156,7 +160,7 @@ export default {
     this.options.title.text = quotes.q_config.name
     
     var ctx = this
-    setInterval(async function () {  
+    this.timer = setInterval(async function () {  
       let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : queryData.alias } ) 
        
       ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + ctx.getRandomInt(-queryData.random, queryData.random) )

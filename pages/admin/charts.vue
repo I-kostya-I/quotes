@@ -126,7 +126,6 @@ export default {
   methods: {
     updateGraphic(refForm){
       this.$refs[refForm].validate((valid) => {
-        console.log(valid)
         if (valid) {
           
           this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
@@ -142,7 +141,8 @@ export default {
       }) 
 
     }
-  },
+  }, 
+    
   components: {
     chart,
   },
