@@ -63,7 +63,9 @@ const parsePages = async () => {
         return tr.map(el => {
           return {
             alias: el.querySelector('a').textContent,
-            price: el.querySelector('[aria-label="Price (Intraday)"]').textContent
+            price: el.querySelector('[aria-label="Price (Intraday)"]').textContent,
+            change : el.querySelector('[aria-label="Change"]').textContent,
+            change_p : el.querySelector('[aria-label="% Change"]').textContent,
           }
         })
       })

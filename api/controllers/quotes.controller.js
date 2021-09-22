@@ -116,11 +116,13 @@ const comparisonTime = (current, open, close) =>{
   return parseTime(current) > parseTime(open) && parseTime(current) < parseTime(close)
 }
 
-const writeQuotesToDB = async (name, price, time) => { 
-  await db.query("CREATE TABLE IF NOT EXISTS `"+ name + "`  ( `id` INT NOT NULL AUTO_INCREMENT , `price` DOUBLE NOT NULL , `date` VARCHAR(255) NOT NULL , `time` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;") 
+const writeQuotesToDB = async (name, price, change, change_p, time) => { 
+  await db.query("CREATE TABLE IF NOT EXISTS `"+ name + "`  ( `id` INT NOT NULL AUTO_INCREMENT , `price` DOUBLE NOT NULL , `change` VARCHAR(255) NOT NULL, `change_p` VARCHAR(255) NOT NULL, `date` VARCHAR(255) NOT NULL , `time` INT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;") 
    
   await db.query('INSERT INTO `'+ name + '` SET ?', { 
     price : price.replace(",", ""),
+    change : change,
+    change_p : change_p,
     date : Math.floor(Date.now() / 1000),
     time : time
   })
@@ -142,7 +144,7 @@ module.exports.addQuotes = async (req, res) => {
 
         if (findQuotes) {
           if (comparisonTime(currentTime, findQuotes.open, findQuotes.close)) {
-            writeQuotesToDB(quote.alias, quote.price, currentMinTime)
+            writeQuotesToDB(quote.alias, quote.price, quote.change, quote.change_p, currentMinTime)
           }
         }  
       }); 
