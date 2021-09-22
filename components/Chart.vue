@@ -146,7 +146,8 @@ export default {
     
   }, 
   destroyed: function(){
-      clearInterval(this.timer);
+    clearInterval(this.timer);
+    this.$parent.$off('addChartPoint')
   }, 
   async mounted(){ 
     let queryData
@@ -160,11 +161,21 @@ export default {
     this.options.title.text = quotes.q_config.name
     
     var ctx = this
-    this.timer = setInterval(async function () {  
-      let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : queryData.alias } ) 
-       
-      ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + ctx.getRandomInt(-queryData.random, queryData.random) )
-    }, 60000 * queryData.period) 
+    
+    if(queryData.manualMod){
+      this.$parent.$on('addChartPoint', (x, y) => {
+        ctx.addPoint(x, y)
+      });
+      
+    } else {
+      this.timer = setInterval(async function () {  
+        let data = await ctx.$store.dispatch('graphics/loadNewPoint', { type : "loadPoint", alias : queryData.alias } ) 
+        
+        ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + ctx.getRandomInt(-queryData.random, queryData.random) )
+      }, 60000 * queryData.period) 
+    }
+    
+    
   }
 };
 </script>

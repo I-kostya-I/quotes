@@ -56,6 +56,7 @@ const loadChartListData = async (body, res) =>{
       quoteList.push({
         alias : body.aliases[alias],
         price : quote[0][0].price,
+        date : quote[0][0].date,
         name : configOneQuote.name,
         open : configOneQuote.open,
         close : configOneQuote.close

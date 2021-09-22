@@ -22,29 +22,46 @@ export default {
     return {
       dataLoad: [],
       chartUniqueKey : 'KTO5DZEMD2JY1',
+      timer : null,
+      queryData : {},
       settingsChart: {
           type: "chart",
           alias: "FB", 
+          manualMod : true,
           period: 1,
           random: 5
         }
     };
+  },  
+ 
+  beforeUpdate: function(){ 
+    clearInterval(this.timer);
+  },
+  updated: function(){
+    this.startTimer()
   }, 
-
   methods: {
-    opemNewChart(alias){
+    opemNewChart(alias){ 
       this.settingsChart.alias = alias
       this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
     }, 
 
-    // addPoint(x, y) {
-    //   this.$refs.chart.chart.yAxis[0].plotLinesAndBands[0].options.value = y
-    //   this.$refs.chart.chart.series[0].addPoint(
-    //     [x, y],
-    //     true,
-    //     this.$refs.chart.chart.series[0].data.length > 50
-    //   );
-    // },
+    startTimer(){
+      var ctx = this 
+
+      this.timer = setInterval(async function () {
+        let quotesUpdate = await ctx.$store.dispatch("graphics/getQuotesData", ctx.queryData);
+
+        ctx.dataLoad = quotesUpdate.data   
+        
+        const point = ctx.dataLoad.find(element => element.alias === ctx.settingsChart.alias)
+        ctx.addPoint(point.date * 1000 + Math.floor(Math.random() * 3000), point.price + ctx.getRandomInt(-ctx.queryData.random, ctx.queryData.random)) 
+      }, 60000 * ctx.queryData.period)
+    },
+
+    addPoint(x, y) {  
+      this.$emit('addChartPoint', x, y);
+    },
 
     getRandomInt(min, max) {
       min = Math.ceil(min);
@@ -53,31 +70,23 @@ export default {
     }
 
   },
-  async mounted() {
+  async mounted() { 
     let queryData;
 
     this.settings
-      ? (queryData = this.settings)
-      : (queryData = this.$route.query);
+      ? (this.queryData = this.settings)
+      : (this.queryData = this.$route.query);
 
-    queryData.aliases = queryData.aliases.split(",");
+    this.queryData.aliases = this.queryData.aliases.split(",");
 
-    let quotes = await this.$store.dispatch("graphics/getQuotesData", queryData);
+    let quotes = await this.$store.dispatch("graphics/getQuotesData", this.queryData);
 
     this.dataLoad = quotes.data 
 
     this.dataLoad.forEach((element,index) => {
-      this.dataLoad[index].price = this.dataLoad[index].price + this.getRandomInt(-queryData.random, queryData.random)
+      this.dataLoad[index].price = this.dataLoad[index].price + this.getRandomInt(-this.queryData.random, this.queryData.random)
     }); 
-
-    var ctx = this
-    setInterval(async function () {
-      let quotesUpdate = await ctx.$store.dispatch("graphics/getQuotesData", queryData);
-
-      ctx.dataLoad = quotesUpdate.data  
-
-      // ctx.addPoint(data.point.date * 1000 + Math.floor(Math.random() * 3000), data.point.price + ctx.getRandomInt(-queryData.random, queryData.random) )
-    }, 60000 * queryData.period)
+    
   },
   components: {
     chart
