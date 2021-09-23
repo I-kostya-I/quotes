@@ -5,8 +5,10 @@
       <chart :settings="settingsChart" :key="chartUniqueKey"/> 
 
       <el-row class="chart-list" v-for="quote in dataLoad" :key="quote.id"  @click.native="opemNewChart(quote.alias)" :gutter="20">
-        <el-col class="chart-list-item" :offset="1" :span="10">{{quote.name}}</el-col>
-        <el-col class="chart-list-item" :offset="1" :span="10">{{quote.price}}</el-col> 
+        <el-col class="chart-list-item" :offset="1" :span="5">{{quote.name}}</el-col>
+        <el-col class="chart-list-item" :offset="1" :span="5">{{quote.price}}</el-col> 
+        <el-col :class="[{ 'positive-number' : quote.change > 0, 'negative-number' :  quote.change < 0} , 'chart-list-item']" :offset="1" :span="5">{{quote.change}}</el-col> 
+        <el-col :class="[{ 'positive-number' : quote.change > 0, 'negative-number' :  quote.change < 0} , 'chart-list-item']" :offset="1" :span="5">{{quote.change_p}}%</el-col> 
       </el-row>
 
     </client-only>
@@ -48,8 +50,8 @@ export default {
 
     startTimer(){
       var ctx = this 
-
-      this.timer = setInterval(async function () {
+      
+      this.timer = setInterval(async function () { 
         let quotesUpdate = await ctx.$store.dispatch("graphics/getQuotesData", ctx.queryData);
 
         ctx.dataLoad = quotesUpdate.data   
@@ -71,20 +73,29 @@ export default {
 
   },
   async mounted() { 
-    let queryData;
-
+    
     this.settings
       ? (this.queryData = this.settings)
       : (this.queryData = this.$route.query);
-
-    this.queryData.aliases = this.queryData.aliases.split(",");
+     
+    if(typeof this.queryData.aliases == 'string'){
+      this.queryData.aliases = this.queryData.aliases.split(",");
+    } 
+    
+    this.settingsChart.period =  this.queryData.period
+    this.settingsChart.random =  this.queryData.random
 
     let quotes = await this.$store.dispatch("graphics/getQuotesData", this.queryData);
 
     this.dataLoad = quotes.data 
 
     this.dataLoad.forEach((element,index) => {
-      this.dataLoad[index].price = this.dataLoad[index].price + this.getRandomInt(-this.queryData.random, this.queryData.random)
+      let randomValue = this.getRandomInt(-this.queryData.random, this.queryData.random)
+
+      this.dataLoad[index].price = this.dataLoad[index].price + randomValue
+
+      this.dataLoad[index].change = parseFloat(this.dataLoad[index].change) 
+      this.dataLoad[index].change_p = parseFloat(this.dataLoad[index].change_p) 
     }); 
     
   },
@@ -107,5 +118,13 @@ export default {
 
 .wraper-chart-list{
   margin: 0 30px;
+}
+
+.positive-number{
+  color: green;
+}
+
+.negative-number{
+  color: red;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wraper-chart">
     <client-only placeholder="Сборка компонентов...">
       <highcharts :constructor-type="'chart'" :updateArgs="updateArgs" ref="chart" :options="options" ></highcharts>
     </client-only>
@@ -152,9 +152,8 @@ export default {
   async mounted(){ 
     let queryData
 
-    this.settings ? queryData = this.settings : queryData = this.$route.query
+    this.settings ? queryData = this.settings : queryData = this.$route.query 
      
-    
     let quotes = await this.$store.dispatch('graphics/getQuotesData', queryData)
      
     this.dataLoad = quotes.data.map(el => [ (el.date *1000) , el.price + this.getRandomInt(-queryData.random, queryData.random)])  
@@ -181,4 +180,8 @@ export default {
 </script>
 
 <style> 
+
+.wraper-chart{
+  margin: 0 30px;
+}
 </style>

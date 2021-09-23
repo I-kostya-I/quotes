@@ -19,7 +19,7 @@ const loadChartData = async (body, res) =>{
     } else {
       let now = new Date();
       // let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      let startOfDay = new Date(now.getFullYear(), now.getMonth(), 10);
+      let startOfDay = new Date(now.getFullYear(), now.getMonth(), 23);
       let timestamp = startOfDay / 1000; 
 
       quotes = await db.query('SELECT price, date FROM `'+ body.alias +'` WHERE date >= ? AND `time` % ? = 0', [timestamp, body.period])
@@ -37,7 +37,7 @@ const loadChartData = async (body, res) =>{
 
 const loadChartListData = async (body, res) =>{
   if(body.aliases && body.aliases.length > 0) {
- 
+    
     let quoteList = []
     let quote
     let sqlConfigString = ''  
@@ -49,14 +49,16 @@ const loadChartListData = async (body, res) =>{
     let quote_config = await db.query('SELECT * FROM `quotes_config`  WHERE `alias` IN (' + sqlConfigString.slice(0, -1)  + ')')  
 
     for (alias in body.aliases) { 
-      quote = await db.query('SELECT price, date FROM `'+ body.aliases[alias] +'` ORDER BY id DESC LIMIT 1')
+      quote = await db.query('SELECT * FROM `'+ body.aliases[alias] +'` ORDER BY id DESC LIMIT 1')
 
       let configOneQuote = quote_config[0].find(element => element.alias === body.aliases[alias])
- 
+
       quoteList.push({
         alias : body.aliases[alias],
         price : quote[0][0].price,
         date : quote[0][0].date,
+        change : quote[0][0].change,
+        change_p : quote[0][0].change_p,
         name : configOneQuote.name,
         open : configOneQuote.open,
         close : configOneQuote.close

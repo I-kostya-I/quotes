@@ -74,10 +74,11 @@
             </el-row> 
           </el-tab-pane>
 
-          <el-tab-pane label="График 2" name="chart-periods">
+          <el-tab-pane label="График с таблицей" name="chart-list">
             <el-row :gutter="20">
               <el-col :span="15">
-                <!-- <chart /> -->
+                
+                <chartList  v-if="settingsChartList.aliases.length > 0"  :settings="settingsChartList" :key="chartListUniqueKey"/>
 
                 <el-input 
                   class="result-chart-link"
@@ -89,6 +90,57 @@
               </el-col>
               <el-col :span="8" :offset="1">
                 <p class="settings-title"><span>Настройки</span></p>
+
+                <el-form label-position="top" ref="chartlist" :model="settingsChartList">
+
+                  <el-form-item label="Тип" >
+                    <el-input disabled v-model="settingsChartList.type"></el-input>
+                  </el-form-item>
+                  
+                  <el-form-item 
+                    label="Алиасы"
+                    prop="aliases"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  >
+                    <el-select multiple  placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsChartList.aliases">
+                      <el-option
+                        v-for="element in this.quotesList"
+                        :key="element.alias"
+                        :label="element.name"
+                        :value="element.alias">
+                      </el-option>
+                    </el-select>
+                     
+                  </el-form-item>
+
+                  <el-form-item 
+                    label="Период"
+                    prop="period"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  > 
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsChartList.period">
+                      <el-option
+                        v-for="element in 60"
+                        :key="element"
+                        :label="element"
+                        :value="element">
+                      </el-option>
+                    </el-select>
+                  </el-form-item> 
+
+                  <el-form-item label="+ Рандомное значение (диапазон)" >
+                    <el-input-number :step="0.1" class="form-iteam-full-width" v-model="settingsChartList.random"></el-input-number>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button class="update-and-gen-url-btn" type="primary" @click="updateGraphic('chartlist')">Обновить график и сгенерировать ссылку</el-button> 
+                  </el-form-item> 
+                  
+                </el-form>
               </el-col>
             </el-row> 
           </el-tab-pane>
@@ -101,9 +153,10 @@
 
 <script>
 import chart from "~/components/Chart.vue";
+import chartList from "~/components/ChartList.vue";
 
 export default {
-  layout: "admin",
+  layout: "admin", 
   name: "Charts",
   middleware: ["adminAuth"],
   async asyncData({ store }) {
@@ -120,11 +173,20 @@ export default {
         alias : null,
         period : 1,
         random : 0
+      },
+
+      chartListUniqueKey :  'KTO56ZEM42J21',
+      settingsChartList:{
+        type : 'chart-list', 
+        aliases : [],
+        random : 1,
+        period : 1
       }
     };
   }, 
   methods: {
     updateGraphic(refForm){
+      
       this.$refs[refForm].validate((valid) => {
         if (valid) {
           
@@ -134,7 +196,12 @@ export default {
 
           switch (refForm) {
             case 'chart':
+              this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
               this.result += `chart?type=${this.settingsChart.type}&alias=${this.settingsChart.alias}&period=${this.settingsChart.period}&random=${this.settingsChart.random}`
+              break; 
+            case 'chartlist':
+              this.chartListUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+              this.result += `chart-list?type=${this.settingsChartList.type}&aliases=${this.settingsChartList.aliases.toString()}&period=${this.settingsChartList.period}&random=${this.settingsChartList.random}`
               break; 
           }
         }
@@ -145,6 +212,7 @@ export default {
     
   components: {
     chart,
+    chartList
   },
 };
 </script>

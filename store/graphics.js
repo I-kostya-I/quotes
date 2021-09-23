@@ -7,7 +7,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async getQuotesData({ commit }, data) {
+  async getQuotesData({ commit }, data) { 
     try {
       const quotes = await this.$axios.post('/api/quotes/load', data)  
       return quotes.data 
