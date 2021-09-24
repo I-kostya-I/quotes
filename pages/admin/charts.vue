@@ -8,13 +8,14 @@
             <el-row :gutter="20">
               <el-col :span="15">
                 <chart v-if="settingsChart.alias" :settings="settingsChart" :key="chartUniqueKey"/>
+                <el-skeleton v-else :rows="11" animated />
 
                 <el-input 
                   class="result-chart-link"
                   type="textarea"
                   :rows="6"
                   placeholder="Ссылка для вставки графика"
-                  v-model="result">
+                  v-model="chartResult">
                 </el-input>
               </el-col>
               <el-col :span="8" :offset="1">
@@ -79,13 +80,14 @@
               <el-col :span="15">
                 
                 <chartList  v-if="settingsChartList.aliases.length > 0"  :settings="settingsChartList" :key="chartListUniqueKey"/>
+                <el-skeleton v-else :rows="11" animated />
 
                 <el-input 
                   class="result-chart-link"
                   type="textarea"
                   :rows="6"
                   placeholder="Ссылка для вставки графика"
-                  v-model="result">
+                  v-model="chartListResult">
                 </el-input>
               </el-col>
               <el-col :span="8" :offset="1">
@@ -145,6 +147,153 @@
             </el-row> 
           </el-tab-pane>
 
+          <el-tab-pane label="Таблица" name="list">
+            <el-row :gutter="20">
+              <el-col :span="15">
+                
+                <list  v-if="settingsList.aliases.length > 0"  :settings="settingsList" :key="listUniqueKey"/>
+                <el-skeleton v-else :rows="11" animated />
+
+                <el-input 
+                  class="result-chart-link"
+                  type="textarea"
+                  :rows="6"
+                  placeholder="Ссылка для вставки графика"
+                  v-model="listResult">
+                </el-input>
+              </el-col>
+              <el-col :span="8" :offset="1">
+                <p class="settings-title"><span>Настройки</span></p>
+
+                <el-form label-position="top" ref="list" :model="settingsList">
+
+                  <el-form-item label="Тип" >
+                    <el-input disabled v-model="settingsList.type"></el-input>
+                  </el-form-item>
+                  
+                  <el-form-item 
+                    label="Алиасы"
+                    prop="aliases"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  >
+                    <el-select multiple  placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsList.aliases">
+                      <el-option
+                        v-for="element in this.quotesList"
+                        :key="element.alias"
+                        :label="element.name"
+                        :value="element.alias">
+                      </el-option>
+                    </el-select>
+                     
+                  </el-form-item>
+
+                  <el-form-item 
+                    label="Период"
+                    prop="period"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  > 
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsList.period">
+                      <el-option
+                        v-for="element in 60"
+                        :key="element"
+                        :label="element"
+                        :value="element">
+                      </el-option>
+                    </el-select>
+                  </el-form-item> 
+
+                  <el-form-item label="+ Рандомное значение (диапазон)" >
+                    <el-input-number :step="0.1" class="form-iteam-full-width" v-model="settingsList.random"></el-input-number>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button class="update-and-gen-url-btn" type="primary" @click="updateGraphic('list')">Обновить график и сгенерировать ссылку</el-button> 
+                  </el-form-item> 
+                  
+                </el-form>
+
+              </el-col>
+            </el-row> 
+          </el-tab-pane>
+
+          <el-tab-pane label="Бегущая строка" name="marquee">
+            <el-row :gutter="20">
+              <el-col :span="15">
+                
+                <marquee  v-if="settingsMarquee.aliases.length > 0"  :settings="settingsMarquee" :key="marqueeUniqueKey"/>
+                <el-skeleton v-else :rows="11" animated />
+
+                <el-input 
+                  class="result-chart-link"
+                  type="textarea"
+                  :rows="6"
+                  placeholder="Ссылка для вставки строки"
+                  v-model="marqueeResult">
+                </el-input>
+              </el-col>
+              <el-col :span="8" :offset="1">
+                <p class="settings-title"><span>Настройки</span></p>
+
+                <el-form label-position="top" ref="marquee" :model="settingsMarquee">
+
+                  <el-form-item label="Тип" >
+                    <el-input disabled v-model="settingsMarquee.type"></el-input>
+                  </el-form-item>
+                  
+                  
+                  <el-form-item 
+                    label="Алиасы"
+                    prop="aliases"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  >
+                    <el-select multiple  placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsMarquee.aliases">
+                      <el-option
+                        v-for="element in this.quotesList"
+                        :key="element.alias"
+                        :label="element.name"
+                        :value="element.alias">
+                      </el-option>
+                    </el-select>
+                     
+                  </el-form-item>
+
+                  <el-form-item 
+                    label="Период"
+                    prop="period"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  > 
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsMarquee.period">
+                      <el-option
+                        v-for="element in 60"
+                        :key="element"
+                        :label="element"
+                        :value="element">
+                      </el-option>
+                    </el-select>
+                  </el-form-item> 
+
+                  <el-form-item label="+ Рандомное значение (диапазон)" >
+                    <el-input-number :step="0.1" class="form-iteam-full-width" v-model="settingsMarquee.random"></el-input-number>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button class="update-and-gen-url-btn" type="primary" @click="updateGraphic('marquee')">Обновить график и сгенерировать ссылку</el-button> 
+                  </el-form-item> 
+                  
+                </el-form>
+
+              </el-col>
+            </el-row> 
+          </el-tab-pane>
+
         </el-tabs>
       </el-col>
     </el-row>
@@ -154,6 +303,8 @@
 <script>
 import chart from "~/components/Chart.vue";
 import chartList from "~/components/ChartList.vue";
+import list from "~/components/List.vue";
+import marquee from "~/components/Marquee.vue";
 
 export default {
   layout: "admin", 
@@ -168,41 +319,71 @@ export default {
       result : '',
       activeTab: "chart",
       chartUniqueKey : 'KTO5DZEMD2JY6',
+      chartResult : '',
       settingsChart: { 
         type : 'chart',
         alias : null,
-        period : 1,
-        random : 0
+        random : 5,
+        period : 1
       },
 
       chartListUniqueKey :  'KTO56ZEM42J21',
+      chartListResult : '',
       settingsChartList:{
         type : 'chart-list', 
         aliases : [],
-        random : 1,
+        random : 5,
+        period : 1
+      },
+
+      listUniqueKey :  'LT456ZEM32J21',
+      listResult : '',
+      settingsList:{
+        type : 'list', 
+        aliases : [],
+        random : 5,
+        period : 1
+      },
+
+      marqueeUniqueKey :  'L545652E332J21',
+      marqueeResult : '',
+      settingsMarquee:{
+        type : 'marquee', 
+        aliases : [],
+        random : 5,
         period : 1
       }
+
+
     };
   }, 
   methods: {
     updateGraphic(refForm){
       
       this.$refs[refForm].validate((valid) => {
-        if (valid) {
-          
-          this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+        if (valid) { 
        
-          this.result = this.$store.getters['config/baseUrl'] + '/graphics/'
+          let baseResultUrl = this.$store.getters['config/baseUrl'] + '/graphics/'
 
           switch (refForm) {
             case 'chart':
               this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
-              this.result += `chart?type=${this.settingsChart.type}&alias=${this.settingsChart.alias}&period=${this.settingsChart.period}&random=${this.settingsChart.random}`
+              this.chartResult = baseResultUrl + `chart?type=${this.settingsChart.type}&alias=${this.settingsChart.alias}&period=${this.settingsChart.period}&random=${this.settingsChart.random}`
               break; 
             case 'chartlist':
               this.chartListUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
-              this.result += `chart-list?type=${this.settingsChartList.type}&aliases=${this.settingsChartList.aliases.toString()}&period=${this.settingsChartList.period}&random=${this.settingsChartList.random}`
+              this.chartListResult = baseResultUrl + `chart-list?type=${this.settingsChartList.type}&aliases=${this.settingsChartList.aliases.toString()}&period=${this.settingsChartList.period}&random=${this.settingsChartList.random}`
               break; 
+            case 'list':
+              this.listUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+              this.listResult = baseResultUrl + `list?type=${this.settingsList.type}&aliases=${this.settingsList.aliases.toString()}&period=${this.settingsList.period}&random=${this.settingsList.random}`
+              break; 
+            case 'marquee':
+              this.marqueeUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+              this.marqueeResult = baseResultUrl + `marquee?type=${this.settingsMarquee.type}&aliases=${this.settingsMarquee.aliases.toString()}&period=${this.settingsMarquee.period}&random=${this.settingsMarquee.random}`
+              break; 
+
+              
           }
         }
       }) 
@@ -212,7 +393,9 @@ export default {
     
   components: {
     chart,
-    chartList
+    chartList,
+    list,
+    marquee
   },
 };
 </script>

@@ -179,8 +179,7 @@ export default {
 };
 </script>
 
-<style> 
-
+<style>  
 .wraper-chart{
   margin: 0 30px;
 }

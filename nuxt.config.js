@@ -35,7 +35,11 @@ module.exports = {
   plugins: [
     '@/plugins/element-ui',
     '@/plugins/axios', 
-    '@/plugins/components', 
+    '@/plugins/components',  
+    {
+      src: "~/plugins/marquee.js",
+      ssr: false
+    },
     {
       src: "~/plugins/highcharts.js",
       ssr: false

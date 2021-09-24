@@ -74,6 +74,84 @@ const loadChartListData = async (body, res) =>{
   }
 }
 
+const loadListData = async (body, res) =>{
+  if(body.aliases && body.aliases.length > 0) {
+    
+    let quoteList = []
+    let quote
+    let sqlConfigString = ''  
+
+    for (alias in body.aliases) { 
+      sqlConfigString +=  `'${body.aliases[alias]}',`
+    }
+
+    let quote_config = await db.query('SELECT * FROM `quotes_config`  WHERE `alias` IN (' + sqlConfigString.slice(0, -1)  + ')')  
+
+    for (alias in body.aliases) { 
+      quote = await db.query('SELECT * FROM `'+ body.aliases[alias] +'` ORDER BY id DESC LIMIT 1')
+
+      let configOneQuote = quote_config[0].find(element => element.alias === body.aliases[alias])
+
+      quoteList.push({
+        alias : body.aliases[alias],
+        price : quote[0][0].price,
+        date : quote[0][0].date,
+        change : quote[0][0].change,
+        change_p : quote[0][0].change_p,
+        name : configOneQuote.name,
+        open : configOneQuote.open,
+        close : configOneQuote.close
+      }); 
+    }  
+
+    res.json({
+      message : "successful",
+      data : quoteList
+    })
+  } else {
+    res.status(409).json({ message: "Не передано aliases" })
+  }
+}
+
+const loadMarqueeData = async (body, res) =>{
+  if(body.aliases && body.aliases.length > 0) {
+    
+    let quoteList = []
+    let quote
+    let sqlConfigString = ''  
+
+    for (alias in body.aliases) { 
+      sqlConfigString +=  `'${body.aliases[alias]}',`
+    }
+
+    let quote_config = await db.query('SELECT * FROM `quotes_config`  WHERE `alias` IN (' + sqlConfigString.slice(0, -1)  + ')')  
+
+    for (alias in body.aliases) { 
+      quote = await db.query('SELECT * FROM `'+ body.aliases[alias] +'` ORDER BY id DESC LIMIT 1')
+
+      let configOneQuote = quote_config[0].find(element => element.alias === body.aliases[alias])
+
+      quoteList.push({
+        alias : body.aliases[alias],
+        price : quote[0][0].price,
+        date : quote[0][0].date,
+        change : quote[0][0].change,
+        change_p : quote[0][0].change_p,
+        name : configOneQuote.name,
+        open : configOneQuote.open,
+        close : configOneQuote.close
+      }); 
+    }  
+
+    res.json({
+      message : "successful",
+      data : quoteList
+    })
+  } else {
+    res.status(409).json({ message: "Не передано aliases" })
+  }
+}
+
 const loadPointData = async (body, res) => {
   if(body.alias) {  
     let quote = await db.query('SELECT price, date FROM `'+ body.alias +'` ORDER BY id DESC LIMIT 1')
@@ -97,8 +175,14 @@ module.exports.getQuotes = async (req, res) => {
       case 'chart-list':
         await loadChartListData(req.body, res) 
         break;
+      case 'list':
+        await loadListData(req.body, res) 
+        break;
       case 'loadPoint':
         await loadPointData(req.body, res) 
+        break; 
+      case 'marquee':
+        await loadMarqueeData(req.body, res) 
         break; 
       default:
         res.status(404).json({ message: `Тип ${req.body.type} не найден` })

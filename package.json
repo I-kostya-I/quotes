@@ -19,7 +19,7 @@
     "cookieparser": "^0.1.0",
     "cross-env": "^5.2.0",
     "dateformat": "^3.0.3",
-    "element-ui": "^2.13.2",
+    "element-ui": "^2.15.6",
     "express": "^4.16.4",
     "highcharts": "^9.2.2",
     "highcharts-vue": "^1.4.0",
@@ -35,7 +35,8 @@
     "passport-jwt": "^4.0.0",
     "path": "^0.12.7",
     "puppeteer": "^10.2.0",
-    "user-agents": "^1.0.762"
+    "user-agents": "^1.0.762",
+    "vue-marquee-text-component": "^1.2.0"
   },
   "devDependencies": {
     "node-sass": "^4.14.1",
