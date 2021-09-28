@@ -75,6 +75,78 @@
             </el-row> 
           </el-tab-pane>
 
+          <el-tab-pane label="График с фильтрами" name="chart-filters">
+            <el-row :gutter="20">
+              <el-col :span="15">
+                <chartFilters v-if="settingsChartFilters.alias" :settings="settingsChartFilters" :key="chartFiltersUniqueKey"/>
+                <el-skeleton v-else :rows="11" animated />
+
+                <el-input 
+                  class="result-chart-link"
+                  type="textarea"
+                  :rows="6"
+                  placeholder="Ссылка для вставки графика"
+                  v-model="chartFiltersResult">
+                </el-input>
+              </el-col>
+              <el-col :span="8" :offset="1">
+                <p class="settings-title"><span>Настройки</span></p>
+                 
+                <el-form label-position="top" ref="chartfilters" :model="settingsChartFilters">
+
+                  <el-form-item label="Тип" >
+                    <el-input disabled v-model="settingsChart.type"></el-input>
+                  </el-form-item>
+ 
+                  <el-form-item 
+                    label="Алиас"
+                    prop="alias"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  >
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsChartFilters.alias">
+                      <el-option
+                        v-for="element in this.quotesList"
+                        :key="element.alias"
+                        :label="element.name"
+                        :value="element.alias">
+                      </el-option>
+                    </el-select>
+                     
+                  </el-form-item>
+
+                  <el-form-item 
+                    label="Период"
+                    prop="period"
+                    :rules="[ 
+                      { required: true, message: 'Поле обязательное для заполнения', trigger: ['blur', 'change'] }
+                    ]"
+                  > 
+                    <el-select placeholder="Выберите значение из списка" class="form-iteam-full-width" v-model="settingsChartFilters.period">
+                      <el-option
+                        v-for="element in 60"
+                        :key="element"
+                        :label="element"
+                        :value="element">
+                      </el-option>
+                    </el-select>
+                  </el-form-item> 
+
+                  <el-form-item label="+ Рандомное значение (диапазон)" >
+                    <el-input-number :step="0.1" class="form-iteam-full-width" v-model="settingsChartFilters.random"></el-input-number>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button class="update-and-gen-url-btn" type="primary" @click="updateGraphic('chartfilters')">Обновить график и сгенерировать ссылку</el-button> 
+                  </el-form-item> 
+                  
+                </el-form>
+              </el-col>
+            </el-row> 
+          </el-tab-pane>
+          
+
           <el-tab-pane label="График с таблицей" name="chart-list">
             <el-row :gutter="20">
               <el-col :span="15">
@@ -302,6 +374,7 @@
 
 <script>
 import chart from "~/components/Chart.vue";
+import chartFilters from "~/components/ChartFilters.vue";
 import chartList from "~/components/ChartList.vue";
 import list from "~/components/List.vue";
 import marquee from "~/components/Marquee.vue";
@@ -321,6 +394,15 @@ export default {
       chartUniqueKey : 'KTO5DZEMD2JY6',
       chartResult : '',
       settingsChart: { 
+        type : 'chart',
+        alias : null,
+        random : 5,
+        period : 1
+      },
+
+      chartFiltersUniqueKey : '2TO4IZEX52JG6',
+      chartFiltersResult : '',
+      settingsChartFilters: { 
         type : 'chart',
         alias : null,
         random : 5,
@@ -370,6 +452,10 @@ export default {
               this.chartUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
               this.chartResult = baseResultUrl + `chart?type=${this.settingsChart.type}&alias=${this.settingsChart.alias}&period=${this.settingsChart.period}&random=${this.settingsChart.random}`
               break; 
+            case 'chartfilters':
+              this.chartFiltersUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+              this.chartFiltersResult = baseResultUrl + `chart-filters?type=${this.settingsChartFilters.type}&alias=${this.settingsChartFilters.alias}&period=${this.settingsChartFilters.period}&random=${this.settingsChartFilters.random}`
+              break;               
             case 'chartlist':
               this.chartListUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
               this.chartListResult = baseResultUrl + `chart-list?type=${this.settingsChartList.type}&aliases=${this.settingsChartList.aliases.toString()}&period=${this.settingsChartList.period}&random=${this.settingsChartList.random}`
@@ -381,9 +467,7 @@ export default {
             case 'marquee':
               this.marqueeUniqueKey = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
               this.marqueeResult = baseResultUrl + `marquee?type=${this.settingsMarquee.type}&aliases=${this.settingsMarquee.aliases.toString()}&period=${this.settingsMarquee.period}&random=${this.settingsMarquee.random}`
-              break; 
-
-              
+              break;  
           }
         }
       }) 
@@ -393,6 +477,7 @@ export default {
     
   components: {
     chart,
+    chartFilters,
     chartList,
     list,
     marquee

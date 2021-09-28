@@ -1,6 +1,6 @@
 <template>
   <div class="wraper-chart">
-    <client-only placeholder="Сборка компонентов...">
+    <client-only placeholder="Сборка компонентов...">  
       <highcharts :constructor-type="'chart'" :updateArgs="updateArgs" ref="chart" :options="options" ></highcharts>
     </client-only>
   </div>
@@ -11,7 +11,7 @@
 export default {
   props : ['settings'],
   data() {
-    return { 
+    return {  
       dataLoad :  [
         []
       ], 
@@ -29,9 +29,9 @@ export default {
           zoomType: "x"
         },
         credits: {
-          enabled: false,
-          text: "Google",
-          href: "https://www.google.com",
+          enabled: true,
+          text: "stock-maks.com",
+          href: "https://stock-maks.com/",
         },
         title: {
           text: "",
@@ -142,10 +142,10 @@ export default {
       min = Math.ceil(min);
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min)) + min;  
-    } 
-    
+    }
+
   }, 
-  destroyed: function(){
+  destroyed: function(){ 
     clearInterval(this.timer);
     this.$parent.$off('addChartPoint')
   }, 
@@ -158,6 +158,18 @@ export default {
      
     this.dataLoad = quotes.data.map(el => [ (el.date *1000) , el.price + this.getRandomInt(-queryData.random, queryData.random)])  
     this.options.title.text = quotes.q_config.name
+    
+    this.$refs.chart.chart.renderer.image('/chart-logo.png', 15, this.$refs.chart.chart.chartHeight-73, 120, 34)
+    .attr({
+        zIndex: 4
+    })
+    .css({
+        cursor : "pointer"
+    })
+    .on('click', function () {
+        event.preventDefault(); 
+        window.open('http://stock-maks.com', '_blank');
+    }).add();
     
     var ctx = this
     

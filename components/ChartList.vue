@@ -1,5 +1,5 @@
 <template>
-  <div class="wraper-chart-list">
+  <div>
     <client-only placeholder="Сборка компонентов..."> 
 
       <chart :settings="settingsChart" :key="chartUniqueKey"/> 
@@ -57,6 +57,7 @@ export default {
         ctx.dataLoad = quotesUpdate.data   
         
         const point = ctx.dataLoad.find(element => element.alias === ctx.settingsChart.alias)
+        
         ctx.addPoint(point.date * 1000 + Math.floor(Math.random() * 3000), point.price + ctx.getRandomInt(-ctx.queryData.random, ctx.queryData.random)) 
       }, 60000 * ctx.queryData.period)
     },
